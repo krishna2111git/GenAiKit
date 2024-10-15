@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python SPA with Styling</title>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <style>
+        /* Basic styling for the entire body */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 50px;
+        }
+
+        /* Container for the content */
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 60%;
+            max-width: 600px;
+        }
+
+        /* Styling for the input bar and button */
+        #input-bar {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+            /* Styling for the input bar and button */
+            #int-input-bar {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styling for the output area */
+        #output-area {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Input Bar -->
+        <input type="text" id="input-bar" placeholder="Enter text">
+        <input type="number" id="int-input-bar" step="1" placeholder="No. of Clusters" required>
+        <button id="submit-button" onclick="processInput()">Submit</button>
+
+        <!-- Display the response -->
+        <div id="output-area">
+            <div id="table-container"></div> <!--Container for the table-->
+        </div>
+    </div>
+
+    <script type="py">
+        import js
+        import json
+        import asyncio
+        from pyodide.http import pyfetch
+        
+        async def processInput():
+            # Get the input value from the input bar
+            input_bar = js.document.getElementById("input-bar")
+            int_input_bar = js.document.getElementById("int-input-bar")
+            text_docs = input_bar.value
+            clusters = int_input_bar.value
+        
+        
+            # Make a GET request to the FastAPI backend with the 'query' parameter
+            url = f"http://127.0.0.1:8000/cluster/?doc_string={text_docs}&clusters={clusters}"
+            response = await pyfetch(url, method="GET")
+        
+            # Get the response as a dictionary
+            response = await response.json()
+
+            response = json.dumps(response, indent=4)
+            # Display the response
+            output_area = js.document.getElementById("output-area")
+            output_area.innerHTML = response
+
+        
+            # Clear the input field
+            input_bar.value = ""
+            int_input_bar.value = ""
+        # Make the processInput function available globally
+        js.processInput = processInput
+    </script>
+</body>
+</html>
